@@ -40,7 +40,9 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    TodoListComposeTheme {
-        Greeting("Android")
+    Surface(modifier = Modifier.fillMaxSize()) {
+        TodoListComposeTheme {
+            Greeting("Android")
+        }
     }
 }
