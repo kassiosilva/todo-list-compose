@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,18 +39,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todolistcompose.ui.theme.Blue
 import com.example.todolistcompose.ui.theme.BlueDark
 import com.example.todolistcompose.ui.theme.Gray100
+import com.example.todolistcompose.ui.theme.Gray200
 import com.example.todolistcompose.ui.theme.Gray300
+import com.example.todolistcompose.ui.theme.Gray400
 import com.example.todolistcompose.ui.theme.Gray500
 import com.example.todolistcompose.ui.theme.Gray600
 import com.example.todolistcompose.ui.theme.Gray700
+import com.example.todolistcompose.ui.theme.Purple
 import com.example.todolistcompose.ui.theme.PurpleDark
 import com.example.todolistcompose.ui.theme.TodoListComposeTheme
 
@@ -86,7 +94,7 @@ fun InputAddTask(value: String, onValueChange: (String) -> Unit, modifier: Modif
             color = Gray100
         ),
         keyboardOptions = KeyboardOptions(
-            capitalization =  KeyboardCapitalization.Sentences,
+            capitalization = KeyboardCapitalization.Sentences,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done
         )
@@ -166,6 +174,72 @@ fun Header(value: String, onValueChange: (String) -> Unit, modifier: Modifier = 
 }
 
 @Composable
+fun InfoTasks(modifier: Modifier = Modifier, createdTasks: Int = 0, completedTasks: Int = 0) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Criadas",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Blue,
+                    fontWeight = FontWeight.Bold
+                ),
+            )
+
+            Box(
+                modifier = Modifier
+                    .background(color = Gray400, shape = RoundedCornerShape(999.dp))
+                    .padding(horizontal = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = createdTasks.toString(),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Gray200,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Concluídas",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Purple,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
+            Box(
+                modifier = Modifier
+                    .background(color = Gray400, shape = RoundedCornerShape(999.dp))
+                    .padding(horizontal = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = completedTasks.toString(),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Gray200,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun App() {
     TodoListComposeTheme(dynamicColor = false, darkTheme = false) {
         var taskValue by remember { mutableStateOf("") }
@@ -180,6 +254,10 @@ fun App() {
                 .background(Gray600),
         ) {
             Header(value = taskValue, onValueChange = { handleTaskValue(it) })
+
+            Spacer(modifier = Modifier.height(56.dp))
+
+            InfoTasks()
         }
     }
 }
