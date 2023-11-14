@@ -247,53 +247,56 @@ fun InfoTasks(modifier: Modifier = Modifier, createdTasks: Int = 0, completedTas
 }
 
 @Composable
-fun EmptyList() {
-    Divider(
-        color = Gray400,
-        modifier = Modifier.padding(horizontal = 20.dp),
-    )
-
+fun EmptyList(modifier: Modifier = Modifier) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(vertical = 48.dp, horizontal = 20.dp),
+            .padding(horizontal = 24.dp)
     ) {
-        Icon(
-            modifier = Modifier.size(56.dp),
-            painter = painterResource(R.drawable.clipboard),
-            tint = Gray400,
-            contentDescription = null
-        )
+        Divider(color = Gray400)
 
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    style = ParagraphStyle(
-                        lineHeight = 19.6.sp,
-                        textAlign = TextAlign.Center
-                    )
-                ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 48.dp, horizontal = 20.dp),
+        ) {
+            Icon(
+                modifier = Modifier.size(56.dp),
+                painter = painterResource(R.drawable.clipboard),
+                tint = Gray400,
+                contentDescription = null
+            )
+
+            Text(
+                text = buildAnnotatedString {
                     withStyle(
-                        style = SpanStyle(
-                            color = Gray300,
-                            fontWeight = FontWeight.Bold
+                        style = ParagraphStyle(
+                            lineHeight = 19.6.sp,
+                            textAlign = TextAlign.Center
                         )
                     ) {
-                        append("Você ainda não tem tarefas cadastradas\n")
+                        withStyle(
+                            style = SpanStyle(
+                                color = Gray300,
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append("Você ainda não tem tarefas cadastradas\n")
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                color = Gray300
+                            )
+                        ) {
+                            append("Crie tarefas e organize seus itens a fazer\n")
+                        }
                     }
-                    withStyle(
-                        style = SpanStyle(
-                            color = Gray300
-                        )
-                    ) {
-                        append("Crie tarefas e organize seus itens a fazer\n")
-                    }
-                }
-            },
-            style = MaterialTheme.typography.bodyMedium,
-        )
+                },
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
     }
 }
 
@@ -317,7 +320,7 @@ fun App() {
 
             InfoTasks()
 
-            Spacer(modifier = Modifier.height(21.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             EmptyList()
         }
