@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,14 +40,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.todolistcompose.ui.theme.Blue
 import com.example.todolistcompose.ui.theme.BlueDark
 import com.example.todolistcompose.ui.theme.Gray100
@@ -240,6 +247,57 @@ fun InfoTasks(modifier: Modifier = Modifier, createdTasks: Int = 0, completedTas
 }
 
 @Composable
+fun EmptyList() {
+    Divider(
+        color = Gray400,
+        modifier = Modifier.padding(horizontal = 20.dp),
+    )
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 48.dp, horizontal = 20.dp),
+    ) {
+        Icon(
+            modifier = Modifier.size(56.dp),
+            painter = painterResource(R.drawable.clipboard),
+            tint = Gray400,
+            contentDescription = null
+        )
+
+        Text(
+            text = buildAnnotatedString {
+                withStyle(
+                    style = ParagraphStyle(
+                        lineHeight = 19.6.sp,
+                        textAlign = TextAlign.Center
+                    )
+                ) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Gray300,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Você ainda não tem tarefas cadastradas\n")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Gray300
+                        )
+                    ) {
+                        append("Crie tarefas e organize seus itens a fazer\n")
+                    }
+                }
+            },
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
 fun App() {
     TodoListComposeTheme(dynamicColor = false, darkTheme = false) {
         var taskValue by remember { mutableStateOf("") }
@@ -258,6 +316,10 @@ fun App() {
             Spacer(modifier = Modifier.height(56.dp))
 
             InfoTasks()
+
+            Spacer(modifier = Modifier.height(21.dp))
+
+            EmptyList()
         }
     }
 }
