@@ -21,24 +21,20 @@ val Typography = Typography(
         fontFamily = inter,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        lineHeight = 1.4.sp,
     ),
     bodyLarge = TextStyle(
         fontFamily = inter,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 1.4.sp,
     ),
     bodyMedium = TextStyle(
         fontFamily = inter,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 1.4.sp,
     ),
     bodySmall = TextStyle(
         fontFamily = inter,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        lineHeight = 1.4.sp,
     )
 )
