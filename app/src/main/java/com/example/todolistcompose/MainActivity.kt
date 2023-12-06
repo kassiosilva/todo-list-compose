@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,6 +41,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +63,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todolistcompose.model.Task
 import com.example.todolistcompose.ui.theme.Blue
 import com.example.todolistcompose.ui.theme.BlueDark
 import com.example.todolistcompose.ui.theme.Gray100
@@ -341,7 +347,7 @@ fun CheckBoxCustom(
 
         label?.let {
             Text(
-                text = it.repeat(10),
+                text = it,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = textColor,
                     lineHeight = 19.6.sp,
@@ -354,8 +360,8 @@ fun CheckBoxCustom(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskItem(modifier: Modifier = Modifier) {
-    var taskChecked by remember { mutableStateOf(false) }
+fun TaskItem(modifier: Modifier = Modifier, taskName: String) {
+    var taskChecked by rememberSaveable { mutableStateOf(false) }
 
     val borderColor = if (!taskChecked) Gray400 else Gray500
 
@@ -376,7 +382,7 @@ fun TaskItem(modifier: Modifier = Modifier) {
         CheckBoxCustom(
             checked = taskChecked,
             onCheckedChange = { taskChecked = it },
-            label = "teste",
+            label = taskName,
             modifier = Modifier.weight(1f)
         )
 
@@ -391,6 +397,24 @@ fun TaskItem(modifier: Modifier = Modifier) {
                     tint = Gray300
                 )
             }
+        }
+    }
+}
+
+private fun getTasks() = List(30) { i -> Task(i, "Task # $i") }
+@Composable
+fun TasksList(
+    modifier: Modifier = Modifier,
+    list: List<Task> = remember { getTasks() }
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        state = rememberLazyListState()
+    ) {
+        items(list) { task ->
+            TaskItem(taskName = task.label)
         }
     }
 }
@@ -417,15 +441,8 @@ fun App() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            //EmptyList()
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 24.dp)
-            ) {
-                TaskItem()
-                TaskItem()
-                TaskItem()
-            }
+            TasksList()
+
         }
     }
 }
