@@ -1,6 +1,7 @@
 package com.example.todolistcompose
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -39,6 +40,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -76,6 +78,7 @@ import com.example.todolistcompose.ui.theme.Gray700
 import com.example.todolistcompose.ui.theme.Purple
 import com.example.todolistcompose.ui.theme.PurpleDark
 import com.example.todolistcompose.ui.theme.TodoListComposeTheme
+import java.util.UUID
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -147,7 +150,13 @@ fun InputAddTask(value: String, onValueChange: (String) -> Unit, modifier: Modif
 }
 
 @Composable
-fun Header(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+fun Header(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
+    var taskValue by remember { mutableStateOf("") }
+
+    fun handleTaskValue(value: String) {
+        taskValue = value
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -169,13 +178,13 @@ fun Header(value: String, onValueChange: (String) -> Unit, modifier: Modifier = 
                 .offset(y = 24.dp)
         ) {
             InputAddTask(
-                value = value,
-                onValueChange = onValueChange,
+                value = taskValue,
+                onValueChange = { handleTaskValue(it) },
                 modifier = Modifier.weight(1f)
             )
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onSubmit(taskValue) },
                 modifier = Modifier
                     .background(color = BlueDark, shape = RoundedCornerShape(6.dp))
                     .size(54.dp)
@@ -401,20 +410,24 @@ fun TaskItem(modifier: Modifier = Modifier, taskName: String) {
     }
 }
 
-private fun getTasks() = List(30) { i -> Task(i, "Task # $i") }
+private fun getTasks() = List(30) { i -> Task(i.toString(), "Task # $i") }
 @Composable
 fun TasksList(
     modifier: Modifier = Modifier,
-    list: List<Task> = remember { getTasks() }
+    list: List<Task>
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        state = rememberLazyListState()
-    ) {
-        items(list) { task ->
-            TaskItem(taskName = task.label)
+    if (list.isEmpty()) {
+        EmptyList()
+    } else {
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            state = rememberLazyListState()
+        ) {
+            items(items = list, key = { task -> task.id }) { task ->
+                TaskItem(taskName = task.label)
+            }
         }
     }
 }
@@ -422,10 +435,15 @@ fun TasksList(
 @Composable
 fun App() {
     TodoListComposeTheme(dynamicColor = false, darkTheme = false) {
-        var taskValue by remember { mutableStateOf("") }
+        val tasks = remember { mutableStateListOf<Task>() }
 
-        fun handleTaskValue(value: String) {
-            taskValue = value
+        fun onSubmit(value: String) {
+            Log.i("TESTE", value)
+
+            val taskId = UUID.randomUUID().toString()
+            val taskItem = Task(id = taskId, label = value)
+
+            tasks.add(taskItem)
         }
 
         Column(
@@ -433,7 +451,7 @@ fun App() {
                 .fillMaxSize()
                 .background(Gray600),
         ) {
-            Header(value = taskValue, onValueChange = { handleTaskValue(it) })
+            Header(onSubmit = { onSubmit(it) })
 
             Spacer(modifier = Modifier.height(56.dp))
 
@@ -441,8 +459,7 @@ fun App() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            TasksList()
-
+            TasksList(list = tasks)
         }
     }
 }
