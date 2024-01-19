@@ -2,6 +2,7 @@ package com.example.todolistcompose
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -50,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
@@ -214,16 +216,14 @@ fun InfoTasks(modifier: Modifier = Modifier, createdTasks: Int = 0, completedTas
             Text(
                 text = "Criadas",
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Blue,
-                    fontWeight = FontWeight.Bold
+                    color = Blue, fontWeight = FontWeight.Bold
                 ),
             )
 
             Box(
                 modifier = Modifier
                     .background(color = Gray400, shape = RoundedCornerShape(999.dp))
-                    .padding(horizontal = 8.dp),
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 8.dp), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = createdTasks.toString(),
@@ -240,24 +240,20 @@ fun InfoTasks(modifier: Modifier = Modifier, createdTasks: Int = 0, completedTas
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Concluídas",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Purple,
-                    fontWeight = FontWeight.Bold
+                text = "Concluídas", style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Purple, fontWeight = FontWeight.Bold
                 )
             )
 
             Box(
                 modifier = Modifier
                     .background(color = Gray400, shape = RoundedCornerShape(999.dp))
-                    .padding(horizontal = 8.dp),
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 8.dp), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = completedTasks.toString(),
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = Gray200,
-                        fontWeight = FontWeight.Bold
+                        color = Gray200, fontWeight = FontWeight.Bold
                     )
                 )
             }
@@ -292,14 +288,12 @@ fun EmptyList(modifier: Modifier = Modifier) {
                 text = buildAnnotatedString {
                     withStyle(
                         style = ParagraphStyle(
-                            lineHeight = 19.6.sp,
-                            textAlign = TextAlign.Center
+                            lineHeight = 19.6.sp, textAlign = TextAlign.Center
                         )
                     ) {
                         withStyle(
                             style = SpanStyle(
-                                color = Gray300,
-                                fontWeight = FontWeight.Bold
+                                color = Gray300, fontWeight = FontWeight.Bold
                             )
                         ) {
                             append("Você ainda não tem tarefas cadastradas\n")
@@ -337,14 +331,12 @@ fun CheckBoxCustom(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .clickable { onCheckedChange(!checked) }
-                .size(17.45.dp)
-                .clip(shape)
-                .border(width = 2.dp, shape = shape, color = borderColor)
-                .background(color = backgroundColor, shape = shape)
-        ) {
+        Box(modifier = Modifier
+            .clickable { onCheckedChange(!checked) }
+            .size(17.45.dp)
+            .clip(shape)
+            .border(width = 2.dp, shape = shape, color = borderColor)
+            .background(color = backgroundColor, shape = shape)) {
             if (checked) {
                 Image(
                     painter = painterResource(R.drawable.checked),
@@ -358,9 +350,7 @@ fun CheckBoxCustom(
             Text(
                 text = it,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = textColor,
-                    lineHeight = 19.6.sp,
-                    textDecoration = textDecoration
+                    color = textColor, lineHeight = 19.6.sp, textDecoration = textDecoration
                 ),
             )
         }
@@ -369,7 +359,7 @@ fun CheckBoxCustom(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskItem(modifier: Modifier = Modifier, taskName: String) {
+fun TaskItem(modifier: Modifier = Modifier, label: String, onRemove: () -> Unit) {
     var taskChecked by rememberSaveable { mutableStateOf(false) }
 
     val borderColor = if (!taskChecked) Gray400 else Gray500
@@ -381,9 +371,7 @@ fun TaskItem(modifier: Modifier = Modifier, taskName: String) {
             .fillMaxWidth()
             .background(color = Gray500, shape = RoundedCornerShape(8.dp))
             .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
+                width = 1.dp, color = borderColor, shape = RoundedCornerShape(8.dp)
             )
             .padding(start = 12.dp, end = 8.dp, top = 12.dp, bottom = 12.dp)
     ) {
@@ -391,14 +379,13 @@ fun TaskItem(modifier: Modifier = Modifier, taskName: String) {
         CheckBoxCustom(
             checked = taskChecked,
             onCheckedChange = { taskChecked = it },
-            label = taskName,
+            label = label,
             modifier = Modifier.weight(1f)
         )
 
         CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
             IconButton(
-                onClick = { },
-                modifier = Modifier.size(32.dp)
+                onClick = { onRemove() }, modifier = Modifier.size(32.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.trash),
@@ -410,40 +397,27 @@ fun TaskItem(modifier: Modifier = Modifier, taskName: String) {
     }
 }
 
-private fun getTasks() = List(30) { i -> Task(i.toString(), "Task # $i") }
-@Composable
-fun TasksList(
-    modifier: Modifier = Modifier,
-    list: List<Task>
-) {
-    if (list.isEmpty()) {
-        EmptyList()
-    } else {
-        LazyColumn(
-            modifier = modifier,
-            contentPadding = PaddingValues(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            state = rememberLazyListState()
-        ) {
-            items(items = list, key = { task -> task.id }) { task ->
-                TaskItem(taskName = task.label)
-            }
-        }
-    }
-}
-
 @Composable
 fun App() {
     TodoListComposeTheme(dynamicColor = false, darkTheme = false) {
+        val context = LocalContext.current
+
         val tasks = remember { mutableStateListOf<Task>() }
 
-        fun handleSubmit(value: String) {
-            Log.i("TESTE", value)
+        fun handleSubmit(taskName: String) {
+            if (taskName.isEmpty()) {
+                Toast.makeText(context, "Digite o nome da task", Toast.LENGTH_SHORT).show()
+                return
+            }
 
             val taskId = UUID.randomUUID().toString()
-            val taskItem = Task(id = taskId, label = value)
+            val taskItem = Task(id = taskId, label = taskName)
 
             tasks.add(taskItem)
+        }
+
+        fun handleRemove(task: Task) {
+            tasks.remove(task)
         }
 
         Column(
@@ -451,7 +425,7 @@ fun App() {
                 .fillMaxSize()
                 .background(Gray600),
         ) {
-            Header(onSubmit = { handleSubmit(it) })
+            Header(onSubmit = { taskName -> handleSubmit(taskName) })
 
             Spacer(modifier = Modifier.height(56.dp))
 
@@ -459,7 +433,19 @@ fun App() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            TasksList(list = tasks)
+            if (tasks.isEmpty()) {
+                EmptyList()
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(horizontal = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = rememberLazyListState()
+                ) {
+                    items(items = tasks, key = { task -> task.id }) { task ->
+                        TaskItem(label = task.label, onRemove = { handleRemove(task) })
+                    }
+                }
+            }
         }
     }
 }
