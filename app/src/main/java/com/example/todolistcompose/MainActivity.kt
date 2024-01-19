@@ -437,7 +437,7 @@ fun App() {
     TodoListComposeTheme(dynamicColor = false, darkTheme = false) {
         val tasks = remember { mutableStateListOf<Task>() }
 
-        fun onSubmit(value: String) {
+        fun handleSubmit(value: String) {
             Log.i("TESTE", value)
 
             val taskId = UUID.randomUUID().toString()
@@ -451,11 +451,11 @@ fun App() {
                 .fillMaxSize()
                 .background(Gray600),
         ) {
-            Header(onSubmit = { onSubmit(it) })
+            Header(onSubmit = { handleSubmit(it) })
 
             Spacer(modifier = Modifier.height(56.dp))
 
-            InfoTasks()
+            InfoTasks(createdTasks = tasks.size)
 
             Spacer(modifier = Modifier.height(20.dp))
 
