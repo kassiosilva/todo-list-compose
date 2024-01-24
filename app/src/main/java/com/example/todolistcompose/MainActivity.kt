@@ -316,7 +316,7 @@ fun EmptyList(modifier: Modifier = Modifier) {
 @Composable
 fun CheckBoxCustom(
     modifier: Modifier = Modifier,
-    checked: Boolean = true,
+    checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
     label: String? = null,
 ) {
@@ -359,10 +359,14 @@ fun CheckBoxCustom(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskItem(modifier: Modifier = Modifier, label: String, onRemove: () -> Unit) {
-    var taskChecked by rememberSaveable { mutableStateOf(false) }
-
-    val borderColor = if (!taskChecked) Gray400 else Gray500
+fun TaskItem(
+    modifier: Modifier = Modifier,
+    checked: Boolean,
+    label: String,
+    onCheckedTask: (Boolean) -> Unit,
+    onRemoveTask: () -> Unit
+) {
+    val borderColor = if (!checked) Gray400 else Gray500
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -377,15 +381,15 @@ fun TaskItem(modifier: Modifier = Modifier, label: String, onRemove: () -> Unit)
     ) {
 
         CheckBoxCustom(
-            checked = taskChecked,
-            onCheckedChange = { taskChecked = it },
+            checked = checked,
+            onCheckedChange = { isChecked -> onCheckedTask(isChecked) },
             label = label,
             modifier = Modifier.weight(1f)
         )
 
         CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
             IconButton(
-                onClick = { onRemove() }, modifier = Modifier.size(32.dp)
+                onClick = onRemoveTask, modifier = Modifier.size(32.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.trash),
@@ -416,9 +420,15 @@ fun App() {
             tasks.add(taskItem)
         }
 
-        fun handleRemove(task: Task) {
-            tasks.remove(task)
+        fun handleRemove(task: Task) = tasks.remove(task)
+
+        fun handleCheckedTask(checked: Boolean, id: String) {
+            tasks.find { task -> task.id == id }?.let { task ->
+                task.checked = checked
+            }
         }
+
+        val completedTasks = tasks.filter { task -> task.checked }.size
 
         Column(
             modifier = Modifier
@@ -429,7 +439,10 @@ fun App() {
 
             Spacer(modifier = Modifier.height(56.dp))
 
-            InfoTasks(createdTasks = tasks.size)
+            InfoTasks(
+                createdTasks = tasks.size,
+                completedTasks = completedTasks
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -442,7 +455,13 @@ fun App() {
                     state = rememberLazyListState()
                 ) {
                     items(items = tasks, key = { task -> task.id }) { task ->
-                        TaskItem(label = task.label, onRemove = { handleRemove(task) })
+                        TaskItem(
+                            label = task.label,
+                            checked = task.checked,
+                            onRemoveTask = { handleRemove(task) },
+                            onCheckedTask = { checked ->
+                                handleCheckedTask(checked = checked, id = task.id)
+                            })
                     }
                 }
             }
