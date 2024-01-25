@@ -2,10 +2,10 @@
   ToDo List Android
 </h1>
 
-<div style="display: flex; flex-flow: row wrap; justify-content: center; gap: 8px;">
+<p align="center" style="margin-right: 8px">
   <img width="300" src="./readme_assets/screenshot_empty_list.jpeg" />
   <img width="300" src="./readme_assets/screenshot_list.jpeg" />
-</div>
+</p>
 
 ## 💻 Sobre o projeto
 
