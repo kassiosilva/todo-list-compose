@@ -329,12 +329,14 @@ fun CheckBoxCustom(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Box(modifier = Modifier
-            .clickable { onCheckedChange(!checked) }
-            .size(17.45.dp)
-            .clip(shape)
-            .border(width = 2.dp, shape = shape, color = borderColor)
-            .background(color = backgroundColor, shape = shape)) {
+        Box(
+            modifier = Modifier
+                .clickable { onCheckedChange(!checked) }
+                .size(17.45.dp)
+                .clip(shape)
+                .border(width = 2.dp, shape = shape, color = borderColor)
+                .background(color = backgroundColor, shape = shape)
+        ) {
             if (checked) {
                 Image(
                     painter = painterResource(R.drawable.checked),
