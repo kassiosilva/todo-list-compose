@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
@@ -91,7 +93,12 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputAddTask(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+fun InputAddTask(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onKeyboardActionDone: () -> Unit
+) {
     val interactionSource = remember { MutableInteractionSource() }
 
     val colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -116,7 +123,10 @@ fun InputAddTask(value: String, onValueChange: (String) -> Unit, modifier: Modif
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
             keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { onKeyboardActionDone() }
         )
     ) {
         TextFieldDefaults.OutlinedTextFieldDecorationBox(
@@ -151,10 +161,18 @@ fun InputAddTask(value: String, onValueChange: (String) -> Unit, modifier: Modif
 
 @Composable
 fun Header(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
+    val focusManager = LocalFocusManager.current
+
     var taskValue by remember { mutableStateOf("") }
 
     fun handleTaskValue(value: String) {
         taskValue = value
+    }
+
+    fun handleSubmit() {
+        onSubmit(taskValue)
+        taskValue = ""
+        focusManager.clearFocus()
     }
 
     Box(
@@ -180,11 +198,12 @@ fun Header(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
             InputAddTask(
                 value = taskValue,
                 onValueChange = { handleTaskValue(it) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onKeyboardActionDone = { handleSubmit() }
             )
 
             IconButton(
-                onClick = { onSubmit(taskValue) },
+                onClick = { handleSubmit() },
                 modifier = Modifier
                     .background(color = BlueDark, shape = RoundedCornerShape(6.dp))
                     .size(54.dp)
