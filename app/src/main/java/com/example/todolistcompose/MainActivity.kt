@@ -68,7 +68,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todolistcompose.model.Task
+import com.example.todolistcompose.ui.components.EmptyList
 import com.example.todolistcompose.ui.components.Header
+import com.example.todolistcompose.ui.components.InfoTasks
 import com.example.todolistcompose.ui.components.InputAddTask
 import com.example.todolistcompose.ui.theme.Blue
 import com.example.todolistcompose.ui.theme.BlueDark
@@ -89,118 +91,6 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       App()
-    }
-  }
-}
-
-@Composable
-fun InfoTasks(modifier: Modifier = Modifier, createdTasks: Int = 0, completedTasks: Int = 0) {
-  Row(
-    modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-  ) {
-    Row(
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      Text(
-        text = "Criadas",
-        style = MaterialTheme.typography.bodyMedium.copy(
-          color = Blue, fontWeight = FontWeight.Bold
-        ),
-      )
-
-      Box(
-        modifier = Modifier
-            .background(color = Gray400, shape = RoundedCornerShape(999.dp))
-            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center
-      ) {
-        Text(
-          text = createdTasks.toString(),
-          style = MaterialTheme.typography.bodySmall.copy(
-            color = Gray200,
-            fontWeight = FontWeight.Bold,
-          ),
-        )
-      }
-    }
-
-    Row(
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      Text(
-        text = "Concluídas", style = MaterialTheme.typography.bodyMedium.copy(
-          color = Purple, fontWeight = FontWeight.Bold
-        )
-      )
-
-      Box(
-        modifier = Modifier
-            .background(color = Gray400, shape = RoundedCornerShape(999.dp))
-            .padding(horizontal = 8.dp), contentAlignment = Alignment.Center
-      ) {
-        Text(
-          text = completedTasks.toString(),
-          style = MaterialTheme.typography.bodySmall.copy(
-            color = Gray200, fontWeight = FontWeight.Bold
-          )
-        )
-      }
-    }
-  }
-}
-
-@Composable
-fun EmptyList(modifier: Modifier = Modifier) {
-  Column(
-    modifier = modifier
-        .fillMaxSize()
-        .padding(horizontal = 24.dp)
-  ) {
-    Divider(color = Gray400)
-
-    Column(
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier
-          .fillMaxSize()
-          .padding(vertical = 48.dp, horizontal = 20.dp),
-    ) {
-      Icon(
-        modifier = Modifier.size(56.dp),
-        painter = painterResource(R.drawable.clipboard),
-        tint = Gray400,
-        contentDescription = null
-      )
-
-      Text(
-        text = buildAnnotatedString {
-          withStyle(
-            style = ParagraphStyle(
-              lineHeight = 19.6.sp, textAlign = TextAlign.Center
-            )
-          ) {
-            withStyle(
-              style = SpanStyle(
-                color = Gray300, fontWeight = FontWeight.Bold
-              )
-            ) {
-              append("Você ainda não tem tarefas cadastradas\n")
-            }
-            withStyle(
-              style = SpanStyle(
-                color = Gray300
-              )
-            ) {
-              append("Crie tarefas e organize seus itens a fazer\n")
-            }
-          }
-        },
-        style = MaterialTheme.typography.bodyMedium,
-      )
     }
   }
 }
@@ -367,7 +257,11 @@ fun App() {
         }
       }
 
-      InfoTasks(createdTasks = tasks.size, completedTasks = completedTasks)
+      InfoTasks(
+        modifier = Modifier.padding(horizontal = 24.dp),
+        createdTasks = tasks.size,
+        completedTasks = completedTasks
+      )
 
       Spacer(modifier = Modifier.height(20.dp))
 
