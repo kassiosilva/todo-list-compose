@@ -68,6 +68,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todolistcompose.model.Task
+import com.example.todolistcompose.ui.components.Header
+import com.example.todolistcompose.ui.components.InputAddTask
 import com.example.todolistcompose.ui.theme.Blue
 import com.example.todolistcompose.ui.theme.BlueDark
 import com.example.todolistcompose.ui.theme.Gray100
@@ -87,133 +89,6 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       App()
-    }
-  }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InputAddTask(
-  value: String,
-  onValueChange: (String) -> Unit,
-  modifier: Modifier = Modifier,
-  onKeyboardActionDone: () -> Unit
-) {
-  val interactionSource = remember { MutableInteractionSource() }
-
-  val colors = TextFieldDefaults.outlinedTextFieldColors(
-    containerColor = Gray500,
-    focusedBorderColor = PurpleDark,
-    unfocusedBorderColor = Gray700,
-  )
-
-  BasicTextField(
-    value = value,
-    onValueChange = onValueChange,
-    modifier = modifier
-        .heightIn(54.dp)
-        .fillMaxWidth(),
-    interactionSource = interactionSource,
-    enabled = true,
-    singleLine = true,
-    cursorBrush = SolidColor(Color.White),
-    textStyle = MaterialTheme.typography.bodyLarge.copy(
-      color = Gray100
-    ),
-    keyboardOptions = KeyboardOptions(
-      capitalization = KeyboardCapitalization.Sentences,
-      keyboardType = KeyboardType.Text,
-      imeAction = ImeAction.Done,
-    ),
-    keyboardActions = KeyboardActions(
-      onDone = { onKeyboardActionDone() }
-    )
-  ) {
-    TextFieldDefaults.OutlinedTextFieldDecorationBox(
-      value = value,
-      innerTextField = it,
-      enabled = true,
-      singleLine = true,
-      interactionSource = interactionSource,
-      visualTransformation = VisualTransformation.None,
-      placeholder = {
-        Text(
-          text = "Adicione uma nova tarefa",
-          style = MaterialTheme.typography.bodyLarge,
-          color = Gray300,
-        )
-      },
-      container = {
-        TextFieldDefaults.OutlinedBorderContainerBox(
-          enabled = true,
-          isError = false,
-          interactionSource = interactionSource,
-          colors = colors,
-          shape = RoundedCornerShape(6.dp),
-          focusedBorderThickness = 1.dp,
-          unfocusedBorderThickness = 1.dp,
-        )
-      },
-      colors = colors,
-    )
-  }
-}
-
-@Composable
-fun Header(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
-  val focusManager = LocalFocusManager.current
-
-  var taskValue by remember { mutableStateOf("") }
-
-  fun handleTaskValue(value: String) {
-    taskValue = value
-  }
-
-  fun handleSubmit() {
-    onSubmit(taskValue)
-    taskValue = ""
-    focusManager.clearFocus()
-  }
-
-  Box(
-    modifier = modifier
-        .fillMaxWidth()
-        .height(173.dp)
-        .background(Gray700)
-  ) {
-    Image(
-      painter = painterResource(R.drawable.logo),
-      contentDescription = null,
-      modifier = Modifier.align(Alignment.Center)
-    )
-
-    Row(
-      horizontalArrangement = Arrangement.spacedBy(4.dp),
-      modifier = Modifier
-          .fillMaxWidth()
-          .align(Alignment.BottomCenter)
-          .padding(horizontal = 24.dp)
-          .offset(y = 24.dp)
-    ) {
-      InputAddTask(
-        value = taskValue,
-        onValueChange = { handleTaskValue(it) },
-        modifier = Modifier.weight(1f),
-        onKeyboardActionDone = { handleSubmit() }
-      )
-
-      IconButton(
-        onClick = { handleSubmit() },
-        modifier = Modifier
-            .background(color = BlueDark, shape = RoundedCornerShape(6.dp))
-            .size(54.dp)
-      ) {
-        Icon(
-          painter = painterResource(R.drawable.plus),
-          contentDescription = "Add",
-          tint = Gray100,
-        )
-      }
     }
   }
 }
@@ -424,8 +299,14 @@ fun TaskItem(
 fun App() {
   TodoListComposeTheme(dynamicColor = false, darkTheme = false) {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     val tasks = remember { mutableStateListOf<Task>() }
+    var taskValue by remember { mutableStateOf("") }
+
+    fun handleTaskValue(value: String) {
+      taskValue = value
+    }
 
     fun handleSubmit(taskName: String) {
       if (taskName.isEmpty()) {
@@ -437,6 +318,8 @@ fun App() {
       val taskItem = Task(id = taskId, label = taskName)
 
       tasks.add(taskItem)
+      taskValue = ""
+      focusManager.clearFocus()
     }
 
     fun handleRemove(task: Task) = tasks.remove(task)
@@ -454,9 +337,35 @@ fun App() {
           .fillMaxSize()
           .background(Gray600),
     ) {
-      Header(onSubmit = { taskName -> handleSubmit(taskName) })
+      Header()
 
-      Spacer(modifier = Modifier.height(56.dp))
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .offset(y = (-32).dp)
+      ) {
+        InputAddTask(
+          value = taskValue,
+          onValueChange = { handleTaskValue(it) },
+          modifier = Modifier.weight(1f),
+          onKeyboardActionDone = { handleSubmit(taskValue) }
+        )
+
+        IconButton(
+          onClick = { handleSubmit(taskValue) },
+          modifier = Modifier
+              .background(color = BlueDark, shape = RoundedCornerShape(6.dp))
+              .size(54.dp)
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.plus),
+            contentDescription = "Add",
+            tint = Gray100,
+          )
+        }
+      }
 
       InfoTasks(createdTasks = tasks.size, completedTasks = completedTasks)
 
