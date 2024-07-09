@@ -11,30 +11,30 @@ import com.example.todolistcompose.R
 
 
 val inter = FontFamily(
-    Font(R.font.inter_regular, FontWeight.Normal),
-    Font(R.font.inter_bold, FontWeight.Bold),
+  Font(R.font.inter_regular, FontWeight.Normal),
+  Font(R.font.inter_bold, FontWeight.Bold),
 )
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    titleLarge = TextStyle(
-        fontFamily = inter,
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = inter,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = inter,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-    ),
-    bodySmall = TextStyle(
-        fontFamily = inter,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-    )
+  titleLarge = TextStyle(
+    fontFamily = inter,
+    fontWeight = FontWeight.Bold,
+    fontSize = 16.sp,
+  ),
+  bodyLarge = TextStyle(
+    fontFamily = inter,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+  ),
+  bodyMedium = TextStyle(
+    fontFamily = inter,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp,
+  ),
+  bodySmall = TextStyle(
+    fontFamily = inter,
+    fontWeight = FontWeight.Normal,
+    fontSize = 12.sp,
+  )
 )
